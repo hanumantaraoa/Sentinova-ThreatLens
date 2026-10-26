@@ -1,0 +1,38 @@
+threatlens-root/
+ ├── docker-compose.yml             # Single-Command Dev Orchestrator
+ ├── requirements.txt               # Sealed Dependency Manifest
+ ├── Dockerfile                     # High-Efficiency Multi-Stage Runner Template
+ ├── .github/workflows/ci.yml       # Hard Gated CI/CD Test & Quality Pipeline
+ └── app/
+     ├── main.py
+     ├── db
+     │    └── seed.py
+     │
+     ├── core/
+     │   ├── config.py              # Environment Network Mapping      
+     │
+Configurations
+     │   ├── database.py            # ORM Session Engines Context
+     │   └── security.py            # Password Crypto & Token Validation Engine
+     ├── models/
+     │   └── all_models.py          # Unified Relational DB Blueprint Schema
+     ├── schemas/
+     │   └── all_schemas.py         # Pydantic v2 Inbound/Outbound Boundary Filters
+     ├── services/
+     │   ├── scoring.py             # Reproducible Threat Analytics Matrix Engine
+     │   ├── enrichment.py          # Cached API Interceptor & Enrichment Pipeline
+     │   ├── tasks.py               # Asynchronous Threat Feed Ingestion Worker
+     │   ├── alerts.py              # Real-Time Event Correlation Broker
+     │   └── reporting.py           # STIX 2.1 Compliance & CSV Exporter Engine
+     ├── api/
+     │   ├── deps.py                # Server-Side JWT Validation & RBAC Guard
+     │   └── v1/
+     │       └── endpoints/
+     │           ├── auth.py        # User Identity Validation Routers
+     │           ├── indicators.py  # IOC Routing Actions & Export Infrastructure
+     │           └── websocket.py   # Gateway Router for Live UI Stream Feeds
+     ├── tests/
+     │   ├── conftest.py            # Automated Isolated DB Fixture Templates
+     │   └── test_indicators.py     # Endpoint Pipeline Verification Tests
+     └── dashboard/
+         └── page.tsx               # Next.js 14 Web Console Workspace
