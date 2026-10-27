@@ -24,9 +24,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8 "black==21.12b0" mypy
+          python -m pip install "click<8.1.0" black
 
       - name: Code Formatting Check (Black)
-        run: black app/
+        run: black --check app/
 
       - name: Linting Verification (Flake8)
         run: flake8 app/ --count --select=E9,F63,F7,F82 --show-source --statistics
