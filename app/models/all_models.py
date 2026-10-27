@@ -1,6 +1,16 @@
 import uuid
 from enum import Enum
-from sqlalchemy import Column, String, Integer, SmallInteger, DateTime, Enum as SQLEnum, ForeignKey, Text, Boolean
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    SmallInteger,
+    DateTime,
+    Enum as SQLEnum,
+    ForeignKey,
+    Text,
+    Boolean,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -67,17 +77,27 @@ class Indicator(Base):
     tlp = Column(SQLEnum(TLPMarking), default=TLPMarking.CLEAR)
     status = Column(SQLEnum(IOCStatus), index=True, default=IOCStatus.ACTIVE)
     first_seen = Column(DateTime(timezone=True), server_default=func.now())
-    last_seen = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    last_seen = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
-    sources = relationship("IndicatorSource", back_populates="indicator", cascade="all, delete-orphan")
+    sources = relationship(
+        "IndicatorSource", back_populates="indicator", cascade="all, delete-orphan"
+    )
 
 
 class IndicatorSource(Base):
     __tablename__ = "indicator_sources"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    indicator_id = Column(UUID(as_uuid=True), ForeignKey("indicators.id", ondelete="CASCADE"), nullable=False)
+    indicator_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("indicators.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     source_name = Column(String, nullable=False)
     confidence = Column(SmallInteger, default=50)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())

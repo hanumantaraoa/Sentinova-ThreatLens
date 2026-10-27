@@ -4,7 +4,14 @@ from typing import List
 
 from app.core.database import get_db
 from app.api.deps import get_current_user, RoleChecker
-from app.models.all_models import User, UserRole, Indicator, IndicatorSource, AuditLog, IOCStatus
+from app.models.all_models import (
+    User,
+    UserRole,
+    Indicator,
+    IndicatorSource,
+    AuditLog,
+    IOCStatus,
+)
 from app.schemas.all_schemas import IndicatorResponse, IndicatorCreate, IndicatorUpdate
 from app.services.scoring import calculate_severity_score
 from app.services.alerts import evaluate_indicator_for_alerting
@@ -18,10 +25,10 @@ router = APIRouter()
 
 @router.get("", response_model=List[IndicatorResponse])
 def fetch_indicators_queue(
-        page: int = 1,
-        limit: int = 50,
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
+    page: int = 1,
+    limit: int = 50,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """
     Surfaces deduplicated canonical threat indicator arrays
@@ -30,20 +37,24 @@ def fetch_indicators_queue(
     offset = (page - 1) * limit
 
     # Query prioritizing critical, active vectors first matching composite index design
-    indicators = db.query(Indicator) \
-        .order_by(Indicator.severity_score.desc()) \
-        .offset(offset) \
-        .limit(limit) \
+    indicators = (
+        db.query(Indicator)
+        .order_by(Indicator.severity_score.desc())
+        .offset(offset)
+        .limit(limit)
         .all()
+    )
 
     return indicators
 
 
 @router.post("", response_model=IndicatorResponse, status_code=status.HTTP_201_CREATED)
 def ingest_threat_indicator(
-        payload: IndicatorCreate,
-        db: Session = Depends(get_db),
-        current_user: User = Depends(RoleChecker([UserRole.ADMIN, UserRole.SECURITY_ENGINEER, UserRole.SOC_ANALYST]))
+    payload: IndicatorCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        RoleChecker([UserRole.ADMIN, UserRole.SECURITY_ENGINEER, UserRole.SOC_ANALYST])
+    ),
 ):
     """
     Aggregates new intelligence inputs, deduplicates values, computes confidence scores,
@@ -57,12 +68,14 @@ def ingest_threat_indicator(
         new_source = IndicatorSource(
             indicator_id=existing_ioc.id,
             source_name=f"Manual Triage - {current_user.username}",
-            confidence=payload.confidence
+            confidence=payload.confidence,
         )
         db.add(new_source)
 
         # Re-compute scoring algorithms based on updated feed values
-        existing_ioc.severity_score = calculate_severity_score(existing_ioc, payload.confidence)
+        existing_ioc.severity_score = calculate_severity_score(
+            existing_ioc, payload.confidence
+        )
         db.commit()
         db.refresh(existing_ioc)
         return existing_ioc
@@ -72,7 +85,7 @@ def ingest_threat_indicator(
         value=payload.value,
         type=payload.type,
         confidence=payload.confidence,
-        tlp=payload.tlp
+        tlp=payload.tlp,
     )
     new_ioc.severity_score = calculate_severity_score(new_ioc, payload.confidence)
 
@@ -82,7 +95,7 @@ def ingest_threat_indicator(
     initial_source = IndicatorSource(
         indicator_id=new_ioc.id,
         source_name=f"Manual Ingest - {current_user.username}",
-        confidence=payload.confidence
+        confidence=payload.confidence,
     )
     db.add(initial_source)
 
@@ -90,7 +103,7 @@ def ingest_threat_indicator(
     audit_entry = AuditLog(
         actor_username=current_user.username,
         action="INDICATOR_INGESTION",
-        details=f"Provisioned canonical shape tracking parameters for target value: {payload.value}"
+        details=f"Provisioned canonical shape tracking parameters for target value: {payload.value}",
     )
     db.add(audit_entry)
     db.commit()
@@ -101,15 +114,20 @@ def ingest_threat_indicator(
 
 @router.patch("/{indicator_id}", response_model=IndicatorResponse)
 def update_indicator_state(
-        indicator_id: str,
-        payload: IndicatorUpdate,
-        db: Session = Depends(get_db),
-        current_user: User = Depends(RoleChecker([UserRole.ADMIN, UserRole.INCIDENT_RESPONDER, UserRole.SOC_ANALYST]))
+    indicator_id: str,
+    payload: IndicatorUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        RoleChecker([UserRole.ADMIN, UserRole.INCIDENT_RESPONDER, UserRole.SOC_ANALYST])
+    ),
 ):
     """Allows operational team profiles to manually adjust mitigation variables or tags."""
     ioc = db.query(Indicator).filter(Indicator.id == indicator_id).first()
     if not ioc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Target indicator trace not found.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Target indicator trace not found.",
+        )
 
     # Apply data updates selectively
     update_data = payload.model_dump(exclude_unset=True)
@@ -119,7 +137,7 @@ def update_indicator_state(
     audit_entry = AuditLog(
         actor_username=current_user.username,
         action="INDICATOR_MODIFICATION",
-        details=f"Modified field parameters across indicator ID: {indicator_id}"
+        details=f"Modified field parameters across indicator ID: {indicator_id}",
     )
     db.add(audit_entry)
     db.commit()
@@ -130,17 +148,22 @@ def update_indicator_state(
 
 @router.post("/{indicator_id}/enrich", response_model=dict)
 async def trigger_on_demand_enrichment(
-        indicator_id: str,
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
+    indicator_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     """Triggers instant data enrichment lookups for specific tracked threat entities (FR-10)."""
     ioc = db.query(Indicator).filter(Indicator.id == indicator_id).first()
     if not ioc:
-        raise HTTPException(status_code=404, detail="Target entity marker does not exist.")
+        raise HTTPException(
+            status_code=404, detail="Target entity marker does not exist."
+        )
 
     if ioc.type != IOCType.IP:
-        raise HTTPException(status_code=400, detail="On-demand lookup optimization is restricted to IP vectors.")
+        raise HTTPException(
+            status_code=400,
+            detail="On-demand lookup optimization is restricted to IP vectors.",
+        )
 
     # Execute lookups leveraging caching layers securely
     enrichment_data = await enrich_ip_indicator(ioc.value, db)
@@ -149,7 +172,7 @@ async def trigger_on_demand_enrichment(
     audit_entry = AuditLog(
         actor_username=current_user.username,
         action="INDICATOR_ENRICHMENT_REFRESH",
-        details=f"Manual enrichment check initiated for target: {ioc.value}"
+        details=f"Manual enrichment check initiated for target: {ioc.value}",
     )
     db.add(audit_entry)
     db.commit()
@@ -159,8 +182,10 @@ async def trigger_on_demand_enrichment(
 
 @router.post("/feed/poll-trigger", status_code=202)
 async def manual_trigger_async_feed(
-        db: Session = Depends(get_db),
-        current_user: User = Depends(RoleChecker([UserRole.ADMIN, UserRole.SECURITY_ENGINEER]))
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        RoleChecker([UserRole.ADMIN, UserRole.SECURITY_ENGINEER])
+    ),
 ):
     """Triggers background ingest loops directly from administrative panels (FR-05)."""
     await poll_urlhaus_intelligence_feed(db)
@@ -169,9 +194,11 @@ async def manual_trigger_async_feed(
 
 @router.post("", response_model=IndicatorResponse, status_code=status.HTTP_201_CREATED)
 async def ingest_threat_indicator(
-        payload: IndicatorCreate,
-        db: Session = Depends(get_db),
-        current_user: User = Depends(RoleChecker([UserRole.ADMIN, UserRole.SECURITY_ENGINEER, UserRole.SOC_ANALYST]))
+    payload: IndicatorCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        RoleChecker([UserRole.ADMIN, UserRole.SECURITY_ENGINEER, UserRole.SOC_ANALYST])
+    ),
 ):
     # ... [Keep your existing model generation logic from Sprint 1 here] ...
 
@@ -189,13 +216,15 @@ async def ingest_threat_indicator(
 
 
 from fastapi.responses import StreamingResponse, Response
-from app.services.reporting import compile_stix21_intelligence_bundle, compile_flat_csv_intelligence_ledger
+from app.services.reporting import (
+    compile_stix21_intelligence_bundle,
+    compile_flat_csv_intelligence_ledger,
+)
 
 
 @router.get("/export/stix", response_class=JSONResponse)
 def export_intelligence_as_stix(
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     """
     Compiles tracked threat intelligence profiles into a structured
@@ -209,7 +238,7 @@ def export_intelligence_as_stix(
     audit_entry = AuditLog(
         actor_username=current_user.username,
         action="INTEL_EXPORT_STIX",
-        details=f"Exported {len(indicators)} intelligence objects inside a unified STIX 2.1 document."
+        details=f"Exported {len(indicators)} intelligence objects inside a unified STIX 2.1 document.",
     )
     db.add(audit_entry)
     db.commit()
@@ -219,8 +248,7 @@ def export_intelligence_as_stix(
 
 @router.get("/export/csv")
 def export_indicators_as_csv(
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     """Generates standard tabular CSV streams to update downstream firewall blocklists or SIEM instances."""
     indicators = db.query(Indicator).filter(Indicator.status == IOCStatus.ACTIVE).all()
@@ -229,7 +257,7 @@ def export_indicators_as_csv(
     audit_entry = AuditLog(
         actor_username=current_user.username,
         action="INTEL_EXPORT_CSV",
-        details=f"Exported tabular threat vector details for {len(indicators)} objects."
+        details=f"Exported tabular threat vector details for {len(indicators)} objects.",
     )
     db.add(audit_entry)
     db.commit()
@@ -237,5 +265,7 @@ def export_indicators_as_csv(
     return Response(
         content=csv_data,
         media_type="text/csv",
-        headers={"Content-Disposition": f"attachment; filename=threatlens_export_{int(time.time())}.csv"}
+        headers={
+            "Content-Disposition": f"attachment; filename=threatlens_export_{int(time.time())}.csv"
+        },
     )

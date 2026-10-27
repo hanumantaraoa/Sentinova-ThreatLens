@@ -23,11 +23,7 @@ engine = create_engine(
 # -------------------------------------------------------------------------
 # autocommit=False and autoflush=False guarantee explicit transaction boundaries,
 # preventing dirty/partial writes during multi-feed deduplication sequences.
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # -------------------------------------------------------------------------
 # DECLARATIVE BASE

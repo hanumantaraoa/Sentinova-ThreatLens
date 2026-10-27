@@ -23,15 +23,16 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     description="Sentinova ThreatLens — Cyber Threat Intelligence Dashboard Enterprise API Core Engine",
     version="1.0.0",
-    docs_url=None,   # Set to None to deactivate default online CDN assets
+    docs_url=None,  # Set to None to deactivate default online CDN assets
     redoc_url=None,  # Set to None to deactivate default online CDN assets
-    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
 
 # ---------------------------------------------------------
 # CUSTOM LOCALIZED/MIRRORED SWAGGER ROUTING INTERFACES
 # ---------------------------------------------------------
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
@@ -44,14 +45,16 @@ async def custom_swagger_ui_html():
         swagger_css_url="/static/swagger-ui.css",
     )
 
+
 @app.get("/redoc", include_in_schema=False)
 async def custom_redoc_html():
     """Injects a reliable alternate CDN engine for the ReDoc data manifest."""
     return get_redoc_html(
         openapi_url=app.openapi_url,
         title=app.title + " - ReDoc Architecture Ledger",
-        redoc_js_url="/static/redoc.js"
+        redoc_js_url="/static/redoc.js",
     )
+
 
 # ---------------------------------------------------------
 # SECURITY MATRIX MIDDLEWARE & CORROSION SECURITY
@@ -83,7 +86,9 @@ class SecurityHardeningMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers[
+            "Strict-Transport-Security"
+        ] = "max-age=31536000; includeSubDomains"
 
         # FIXED: Explicitly whitelist Cloudflare cdnjs to allow Swagger UI scripts to parse cleanly
         response.headers["Content-Security-Policy"] = (
@@ -117,8 +122,8 @@ async def global_runtime_exception_handler(request: Request, exc: Exception):
         content={
             "error_code": "SYSTEMIC_RUNTIME_FAULT",
             "message": "An unhandled execution crash occurred inside the application processing layers.",
-            "correlation_id": correlation_id
-        }
+            "correlation_id": correlation_id,
+        },
     )
 
 
@@ -135,7 +140,7 @@ async def system_health_check():
         "status": "healthy",
         "timestamp": time.time(),
         "ecosystem": settings.PROJECT_NAME,
-        "version": "1.0.0-Baseline"
+        "version": "1.0.0-Baseline",
     }
 
 
@@ -143,8 +148,16 @@ async def system_health_check():
 # ROUTING CONTROLLERS PIPELINE MOUNTING
 # ---------------------------------------------------------
 # Versioned endpoints mapping exactly to the structural requirements matrix
-app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["Authentication Operations"])
-app.include_router(indicators.router, prefix=f"{settings.API_V1_STR}/indicators", tags=["Threat Intelligence Core"])
+app.include_router(
+    auth.router,
+    prefix=f"{settings.API_V1_STR}/auth",
+    tags=["Authentication Operations"],
+)
+app.include_router(
+    indicators.router,
+    prefix=f"{settings.API_V1_STR}/indicators",
+    tags=["Threat Intelligence Core"],
+)
 
 
 # Mount real-time websocket connections alongside standard REST endpoints

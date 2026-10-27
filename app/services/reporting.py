@@ -13,7 +13,7 @@ def convert_tlp_to_stix(tlp_marking: TLPMarking) -> str:
         TLPMarking.CLEAR: "marking-definition--613f2e26-407d-48c7-9ece-b7e992d9316e",
         TLPMarking.GREEN: "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da",
         TLPMarking.AMBER: "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82",
-        TLPMarking.RED: "marking-definition--5e57c739-ab7e-4679-b6d3-de4092ca9040"
+        TLPMarking.RED: "marking-definition--5e57c739-ab7e-4679-b6d3-de4092ca9040",
     }
     return tlp_map.get(tlp_marking, tlp_map[TLPMarking.CLEAR])
 
@@ -55,35 +55,44 @@ def compile_stix21_intelligence_bundle(indicators: list[Indicator]) -> dict:
             "pattern_type": "stix",
             "valid_from": ioc.first_seen.replace(tzinfo=timezone.utc).isoformat(),
             "object_marking_refs": [convert_tlp_to_stix(ioc.tlp)],
-            "confidence": int(ioc.confidence)
+            "confidence": int(ioc.confidence),
         }
         stix_objects.append(stix_indicator)
 
-    return {
-        "type": "bundle",
-        "id": bundle_id,
-        "objects": stix_objects
-    }
+    return {"type": "bundle", "id": bundle_id, "objects": stix_objects}
 
 
 def compile_flat_csv_intelligence_ledger(indicators: list[Indicator]) -> str:
     """Compiles intelligence records into standard tabular CSV string structures for SIEM ingestion."""
     output = io.StringIO()
-    writer = csv.writer(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    writer = csv.writer(output, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
     # Write header maps
-    writer.writerow(["id", "value", "type", "severity_score", "confidence", "tlp", "status", "last_seen"])
+    writer.writerow(
+        [
+            "id",
+            "value",
+            "type",
+            "severity_score",
+            "confidence",
+            "tlp",
+            "status",
+            "last_seen",
+        ]
+    )
 
     for ioc in indicators:
-        writer.writerow([
-            str(ioc.id),
-            ioc.value,
-            ioc.type.value,
-            ioc.severity_score,
-            ioc.confidence,
-            ioc.tlp.value,
-            ioc.status.value,
-            ioc.last_seen.isoformat()
-        ])
+        writer.writerow(
+            [
+                str(ioc.id),
+                ioc.value,
+                ioc.type.value,
+                ioc.severity_score,
+                ioc.confidence,
+                ioc.tlp.value,
+                ioc.status.value,
+                ioc.last_seen.isoformat(),
+            ]
+        )
 
     return output.getvalue()

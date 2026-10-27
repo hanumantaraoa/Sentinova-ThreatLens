@@ -14,7 +14,9 @@ async def evaluate_indicator_for_alerting(indicator: Indicator, db: Session):
     CRITICAL_SCORE_THRESHOLD = 70
 
     if indicator.severity_score >= CRITICAL_SCORE_THRESHOLD:
-        logger.info(f"High-severity vector verified [{indicator.value}]. Initializing alert lifecycle...")
+        logger.info(
+            f"High-severity vector verified [{indicator.value}]. Initializing alert lifecycle..."
+        )
 
         # 1. Format structural payload for instant dashboard broadcast
         alert_payload = {
@@ -24,7 +26,7 @@ async def evaluate_indicator_for_alerting(indicator: Indicator, db: Session):
             "type": indicator.type.value,
             "severity_score": indicator.severity_score,
             "tlp": indicator.tlp.value,
-            "status": AlertStatus.NEW.value
+            "status": AlertStatus.NEW.value,
         }
 
         # 2. Push event data to the real-time manager for immediate fan-out
@@ -34,7 +36,7 @@ async def evaluate_indicator_for_alerting(indicator: Indicator, db: Session):
         audit_entry = AuditLog(
             actor_username="SYSTEM_CORRELATION_ENGINE",
             action="ALERT_GENERATED",
-            details=f"Automated alert raised for high-severity indicator: {indicator.value} (Score: {indicator.severity_score})"
+            details=f"Automated alert raised for high-severity indicator: {indicator.value} (Score: {indicator.severity_score})",
         )
         db.add(audit_entry)
         db.commit()

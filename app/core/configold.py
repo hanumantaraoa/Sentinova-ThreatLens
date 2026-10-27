@@ -7,7 +7,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     PROJECT_NAME: str = "ThreatLens"
     API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "SUPER_SECRET_SECURITY_TOKEN_CHANGE_IN_PRODUCTION")
+    SECRET_KEY: str = os.getenv(
+        "SECRET_KEY", "SUPER_SECRET_SECURITY_TOKEN_CHANGE_IN_PRODUCTION"
+    )
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "localhost")
@@ -22,9 +24,12 @@ class Settings(BaseSettings):
 
     REDIS_HOST: str = os.getenv("REDIS_HOST", "redis")
     REDIS_PORT: int = int(os.getenv("REDIS_PORT", 6379))
-    ELASTICSEARCH_HOST: str = os.getenv("ELASTICSEARCH_HOST", "http://elasticsearch:9200")
+    ELASTICSEARCH_HOST: str = os.getenv(
+        "ELASTICSEARCH_HOST", "http://elasticsearch:9200"
+    )
 
     class Config:
         env_file = ".env"
+
 
 settings = Settings()

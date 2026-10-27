@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="990b704e-00db-495a-9ae0-97073e21b4fb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/ci.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/pyLspTools.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/pyTypeEngine.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api/v1/endpoints/indicators.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/v1/endpoints/indicators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/all_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/all_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +74,7 @@
       <workItem from="1793036542872" duration="3018000" />
       <workItem from="1793068552402" duration="11842000" />
       <workItem from="1793083967867" duration="295000" />
-      <workItem from="1793084314070" duration="5503000" />
+      <workItem from="1793084314070" duration="6588000" />
     </task>
     <servers />
   </component>
