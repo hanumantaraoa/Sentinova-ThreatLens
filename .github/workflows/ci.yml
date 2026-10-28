@@ -53,7 +53,7 @@ jobs:
             --cov=app \
             --cov-report=term-missing \
             --cov-fail-under=80 \
-            app/app/tests/
+            app/tests/
 
       - name: Tear Down Ephemeral Container Stack
         if: always()
