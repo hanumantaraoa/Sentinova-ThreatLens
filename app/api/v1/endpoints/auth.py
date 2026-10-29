@@ -13,7 +13,8 @@ router = APIRouter()
 
 @router.post("/login", response_model=TokenResponse)
 def login_access_session(
-    db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
+        db: Session = Depends(get_db),
+        form_data: OAuth2PasswordRequestForm = Depends()
 ):
     """
     Validates user credentials against adaptive hashing strategies,
@@ -25,7 +26,7 @@ def login_access_session(
         # Operational security protocol: Write failure to system tracking logs
         failed_log = AuditLog(
             action="AUTHENTICATION_FAILED",
-            details=f"Failed login attempt for account value: {form_data.username}",
+            details=f"Failed login attempt for account value: {form_data.username}"
         )
         db.add(failed_log)
         db.commit()
@@ -39,7 +40,7 @@ def login_access_session(
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication blocked: User account is currently deactivated.",
+            detail="Authentication blocked: User account is currently deactivated."
         )
 
     # Issue stateless JSON Web Tokens
@@ -49,7 +50,7 @@ def login_access_session(
     success_log = AuditLog(
         actor_username=user.username,
         action="AUTHENTICATION_SUCCESS",
-        details="Access session tokens generated cleanly.",
+        details="Access session tokens generated cleanly."
     )
     db.add(success_log)
     db.commit()
@@ -57,7 +58,7 @@ def login_access_session(
     return {
         "access_token": access_token,
         "refresh_token": "REFRESH_TOKEN_ROTATION_STUB_IMPLEMENTATION",
-        "token_type": "bearer",
+        "token_type": "bearer"
     }
 
 
