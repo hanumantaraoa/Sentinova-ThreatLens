@@ -31,6 +31,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Inherited by all operational tables in app/models/all_models.py to register metadata structures.
 Base = declarative_base()
 
+
 # -------------------------------------------------------------------------
 # DEPENDENCY INJECTION CONTEXT
 # -------------------------------------------------------------------------

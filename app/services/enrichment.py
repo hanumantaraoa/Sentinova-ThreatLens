@@ -52,9 +52,11 @@ async def enrich_ip_indicator(
                     "country_code": raw_data.get("countryCode", "US"),
                     "isp": raw_data.get("isp", "Unknown Provider"),
                     "total_reports": raw_data.get("totalReports", 0),
-                    "verdict": "malicious"
-                    if raw_data.get("abuseConfidenceScore", 0) > 50
-                    else "clean",
+                    "verdict": (
+                        "malicious"
+                        if raw_data.get("abuseConfidenceScore", 0) > 50
+                        else "clean"
+                    ),
                 }
 
                 # Write to the caching engine to accelerate subsequent queries
