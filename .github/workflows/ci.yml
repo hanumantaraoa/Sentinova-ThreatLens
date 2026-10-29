@@ -59,9 +59,10 @@ jobs:
             --cov-report=term-missing \
             --cov-fail-under=80 \
             app/tests/
-      - name: Setup Tmate SSH/HTTP Tunnel for Debugging
-        uses: mxschmitt/action-tmate@v3
+      - name: Setup Interactive SSH Tunnel for Debugging (Upterm)
+        uses: lhotari/action-upterm@v1
         if: always() # Forces the pipeline to pause here so you can connect
+
  
       - name: Tear Down Ephemeral Container Stack
         if: always()
