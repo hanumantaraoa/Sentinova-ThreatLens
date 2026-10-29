@@ -59,11 +59,7 @@ jobs:
             --cov-report=term-missing \
             --cov-fail-under=80 \
             app/tests/
-      - name: Setup Interactive SSH Tunnel for Debugging (Upterm)
-        uses: lhotari/action-upterm@v1
-        if: always() # Forces the pipeline to pause here so you can connect
-
- 
+      
       - name: Tear Down Ephemeral Container Stack
         if: always()
         run: docker compose -f docker-compose.yml down -v
