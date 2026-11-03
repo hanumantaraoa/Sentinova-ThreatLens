@@ -17,7 +17,6 @@ from app.models.all_models import (
 TEST_DATABASE_URL = "postgresql://postgres:postgres@postgres:5432/threatlens_test"
 
 
-
 @pytest.fixture(scope="session")
 def db_engine():
     # Force system drops to guarantee zero persistent data leaks across execution boundaries
