@@ -14,7 +14,8 @@ from app.models.all_models import (
 )
 
 # Use an isolated, low-overhead PostgreSQL database container block for automated tests
-TEST_DATABASE_URL = "postgresql://postgres:postgres@postgres/threatlens_test"
+TEST_DATABASE_URL = "postgresql://postgres:postgres@postgres:5432/threatlens_test"
+
 
 
 @pytest.fixture(scope="session")
