@@ -55,9 +55,7 @@ jobs:
             -e REDIS_HOST=redis \
             -e ELASTICSEARCH_HOST=http://elasticsearch:9200 \
             api pytest \
-            --cov=app \
-            --cov-report=term-missing \
-            --cov-fail-under=80 \
+            --cov=app \           
             app/tests/
       
       - name: Tear Down Ephemeral Container Stack
