@@ -17,14 +17,19 @@ from app.models.all_models import (
 TEST_DATABASE_URL = "postgresql://postgres:postgres@postgres:5432/threatlens_test"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def db_engine():
-    # Force system drops to guarantee zero persistent data leaks across execution boundaries
+    # Automatically creates the database container on your host if it doesn't exist yet
     engine = create_engine(TEST_DATABASE_URL)
+    if not database_exists(engine.url):
+        create_database(engine.url)
+        
+    # Drop and recreate schema definitions securely
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
+    
     yield engine
-    Base.metadata.drop_all(bind=engine)
+    engine.dispose()
 
 
 @pytest.fixture(scope="function")
