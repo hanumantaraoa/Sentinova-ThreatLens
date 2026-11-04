@@ -10,7 +10,9 @@ def test_fetch_indicators_queue_unauthenticated(client):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_fetch_indicators_queue_authorized(client, mock_soc_analyst, static_threat_dataset):
+def test_fetch_indicators_queue_authorized(
+    client, mock_soc_analyst, static_threat_dataset
+):
     """Validates prioritized data processing arrays for authorized team profiles."""
     # Generate explicit test security token mapping to analyst access roles
     token = create_access_token(data={"sub": mock_soc_analyst.username})
