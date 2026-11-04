@@ -55,8 +55,7 @@ jobs:
             -e REDIS_HOST=redis \
             -e ELASTICSEARCH_HOST=http://elasticsearch:9200 \
             api python -m pytest \
-            app/tests/
-            exit-code: '0' 
+            app/tests/ 
       
       - name: Tear Down Ephemeral Container Stack
         if: always()
