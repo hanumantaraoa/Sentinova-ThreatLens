@@ -54,7 +54,7 @@ jobs:
             -e POSTGRES_SERVER=postgres \
             -e REDIS_HOST=redis \
             -e ELASTICSEARCH_HOST=http://elasticsearch:9200 \
-            api pytest \
+            api python -m pytest \
             app/tests/
             exit-code: '0' 
       
