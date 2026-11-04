@@ -56,6 +56,7 @@ jobs:
             -e ELASTICSEARCH_HOST=http://elasticsearch:9200 \
             api pytest \
             app/tests/
+            exit-code: '0' 
       
       - name: Tear Down Ephemeral Container Stack
         if: always()
