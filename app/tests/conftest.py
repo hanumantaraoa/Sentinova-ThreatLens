@@ -24,11 +24,11 @@ def db_engine():
     engine = create_engine(TEST_DATABASE_URL)
     if not database_exists(engine.url):
         create_database(engine.url)
-        
+
     # Drop and recreate schema definitions securely
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
-    
+
     yield engine
     engine.dispose()
 
